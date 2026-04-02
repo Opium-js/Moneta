@@ -57,5 +57,6 @@ def index():
         chart_labels=chart_labels,
         recent_transactions=recent_transactions,
         current_month=month_names[current_month - 1],
+        current_month_num=current_month,  
         current_year=current_year
     )

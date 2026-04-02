@@ -6,7 +6,10 @@
 
     <div class="dashboard-header">
         <h2>Dashboard</h2>
-        <span class="period">{{ current_month }} {{ current_year }}</span>
+        <div style="display:flex; gap:0.5rem; align-items:center;">
+            <a href="/export/csv?month={{ current_month_num }}&year={{ current_year }}" class="btn">⬇ Export month</a>
+            <span class="period">{{ current_month }} {{ current_year }}</span>
+        </div>
     </div>
 
     <div class="summary-cards">

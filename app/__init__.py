@@ -53,4 +53,7 @@ def create_app():
     from app.budgets import budgets_bp
     app.register_blueprint(budgets_bp)
 
+    from app.exports import exports_bp
+    app.register_blueprint(exports_bp)
+
     return app
