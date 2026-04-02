@@ -1,8 +1,138 @@
 {% extends "base.html" %}
-
-{% block title %}Moneta — Dashboard{% endblock %}
+{% block title %}Dashboard — Moneta{% endblock %}
 
 {% block content %}
-    <h2>Welcome to Moneta! 👋</h2>
-    <p>Your personal finance tracker.</p>
+<div class="container">
+
+    <div class="dashboard-header">
+        <h2>Dashboard</h2>
+        <span class="period">{{ current_month }} {{ current_year }}</span>
+    </div>
+
+    <div class="summary-cards">
+        <div class="card income">
+            <span>Monthly Income</span>
+            <strong>+{{ "%.2f"|format(monthly_income) }} zł</strong>
+        </div>
+        <div class="card expense">
+            <span>Monthly Expenses</span>
+            <strong>-{{ "%.2f"|format(monthly_expense) }} zł</strong>
+        </div>
+        <div class="card balance">
+            <span>Balance</span>
+            <strong>{{ "%.2f"|format(monthly_balance) }} zł</strong>
+        </div>
+    </div>
+
+    <div class="charts-grid">
+        <div class="chart-card">
+            <h3>Income vs Expenses</h3>
+            <canvas id="lineChart"></canvas>
+        </div>
+        <div class="chart-card">
+            <h3>Expenses by Category</h3>
+            <canvas id="doughnutChart"></canvas>
+        </div>
+    </div>
+
+    <div class="recent-card">
+        <div class="page-header">
+            <h3>Recent Transactions</h3>
+            <a href="/transactions" class="btn">View all →</a>
+        </div>
+
+        {% for t in recent_transactions %}
+        <div class="transaction-item {{ t.type }}">
+            <div class="transaction-left">
+                <span class="icon">{{ t.category.icon if t.category else '📦' }}</span>
+                <div>
+                    <strong>{{ t.description or 'No description' }}</strong>
+                    <small>{{ t.date.strftime('%d.%m.%Y') }} • {{ t.category.name if t.category else 'No category' }}</small>
+                </div>
+            </div>
+            <div class="transaction-right">
+                <span class="amount {{ t.type }}">
+                    {{ '+' if t.type == 'income' else '-' }}{{ "%.2f"|format(t.amount) }} zł
+                </span>
+            </div>
+        </div>
+        {% else %}
+        <p class="empty">No transactions yet. <a href="/transactions/add">Add your first one!</a></p>
+        {% endfor %}
+    </div>
+
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    const labels = {{ chart_labels | tojson }};
+    const incomeData = {{ monthly_data.income | tojson }};
+    const expenseData = {{ monthly_data.expense | tojson }};
+
+    const categoryLabels = {{ expense_by_category.keys() | list | tojson }};
+    const categoryAmounts = {{ expense_by_category.values() | map(attribute='amount') | list | tojson }};
+    const categoryColors = {{ expense_by_category.values() | map(attribute='color') | list | tojson }};
+</script>
+<script>
+    new Chart(document.getElementById('lineChart'), {
+        type: 'line',
+        data: {
+            labels: labels,
+            datasets: [
+                {
+                    label: 'Income',
+                    data: incomeData,
+                    borderColor: '#2ecc71',
+                    backgroundColor: 'rgba(46, 204, 113, 0.1)',
+                    tension: 0.4,
+                    fill: true
+                },
+                {
+                    label: 'Expenses',
+                    data: expenseData,
+                    borderColor: '#e74c3c',
+                    backgroundColor: 'rgba(231, 76, 60, 0.1)',
+                    tension: 0.4,
+                    fill: true
+                }
+            ]
+        },
+        options: {
+            responsive: true,
+            plugins: {
+                legend: { position: 'top' }
+            },
+            scales: {
+                y: { beginAtZero: true }
+            }
+        }
+    });
+</script>
+<script>
+    const ctx2 = document.getElementById('doughnutChart');
+
+    if (categoryLabels.length > 0) {
+        new Chart(ctx2, {
+            type: 'doughnut',
+            data: {
+                labels: categoryLabels,
+                datasets: [{
+                    data: categoryAmounts,
+                    backgroundColor: categoryColors,
+                    borderWidth: 2
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: { position: 'right' }
+                }
+            }
+        });
+    } else {
+        ctx2.parentElement.innerHTML += '<p class="empty">No expenses this month.</p>';
+    }
+</script>
 {% endblock %}

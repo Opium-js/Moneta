@@ -13,12 +13,12 @@
             <div class="nav-links">
                 <a href="/transactions">Transactions</a>
                 <span>{{ current_user.username }}</span>
-                <a href="/logout">Log out</a>
+                <a href="/logout">Logout</a>
             </div>
         {% else %}
             <div class="nav-links">
-                <a href="/login">Log in</a>
-                <a href="/register">Sing up</a>
+                <a href="/login">Login</a>
+                <a href="/register">Register</a>
             </div>
         {% endif %}
     </nav>
@@ -27,6 +27,6 @@
         {% block content %}{% endblock %}
     </main>
 
-    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+    {% block scripts %}{% endblock %}
 </body>
 </html>
