@@ -111,5 +111,3 @@ This project is open source and available under the [MIT License](LICENSE).
 ## 🤖 Narzędzia i wsparcie
 
 Projekt został zbudowany przy pomocy [Claude](https://claude.ai) — asystenta AI, który wspierał proces planowania architektury, pisania kodu oraz rozwiązywania problemów technicznych napotkanych podczas rozwoju projektu.
-
-```
